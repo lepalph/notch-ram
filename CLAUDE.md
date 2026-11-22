@@ -27,6 +27,7 @@ utilisée / totale, pression, swap, et les 5 process les plus gourmands (bouton 
 - Mode capture QA (panneau déplié, sans minuteurs) : `... --open`.
 - Aperçu du README : `... --capture docs/apercu.png` (rendu SwiftUI hors écran, sans autorisation d'enregistrement d'écran).
 - Quitter : bouton « Fermer le widget » dans le panneau, ou `pkill NotchRAM`.
+- Release : `./build.sh`, puis `ditto -c -k --keepParent build/NotchRAM.app dist/NotchRAM-X.Y.Z.zip` (ditto garde la signature), `shasum -a 256` dans un `.sha256`, tag `vX.Y.Z`, `gh release create` avec les deux fichiers (jeton lepalph). Monter `CFBundleShortVersionString` avant.
 
 ## Règles d'or
 
