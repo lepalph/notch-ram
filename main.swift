@@ -95,9 +95,20 @@ final class Model: ObservableObject {
             return
         }
         armed = nil
-        // terminate() passe par l'app : elle propose d'enregistrer les documents ouverts.
-        if let app = NSRunningApplication(processIdentifier: pid) { app.terminate() } else { kill(pid, SIGTERM) }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in self?.refresh() }
+        quitProcess(pid)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in self?.refresh() }
+    }
+}
+
+/// Une vraie app (Dock) reçoit seulement terminate() : elle peut proposer d'enregistrer, on ne la force jamais.
+/// Le reste (services XPC comme « Contenu web Safari », apps de barre des menus, processus nus) ignore souvent
+/// cette demande : SIGTERM s'il tourne encore 1,5 s après.
+func quitProcess(_ pid: pid_t, after delay: Double = 1.5) {
+    let app = NSRunningApplication(processIdentifier: pid)
+    if let app, app.activationPolicy == .regular { app.terminate(); return }
+    app?.terminate()
+    DispatchQueue.main.asyncAfter(deadline: .now() + (app == nil ? 0 : delay)) {
+        if kill(pid, 0) == 0 { kill(pid, SIGTERM) }
     }
 }
 
@@ -285,6 +296,15 @@ if CommandLine.arguments.contains("--selftest") {
     precondition(!s.top.isEmpty && zip(s.top, s.top.dropFirst()).allSatisfy { $0.bytes >= $1.bytes }, "top process vide ou mal trié")
     print("OK  \(fmt(s.used)) / \(fmt(s.total)) (\(s.percent) %)  pression=\(s.pressure)  swap=\(fmt(s.swap))")
     s.top.forEach { print("    \($0.name)  \(fmt($0.bytes))") }
+    // Quitter un processus qui n'est pas une app : il doit disparaître (régression du 2026-11-22).
+    let sleeper = Process()
+    sleeper.executableURL = URL(fileURLWithPath: "/bin/sleep"); sleeper.arguments = ["30"]
+    try! sleeper.run()
+    quitProcess(sleeper.processIdentifier)
+    RunLoop.main.run(until: Date().addingTimeInterval(0.5))
+    sleeper.waitUntilExit()
+    precondition(sleeper.terminationReason == .uncaughtSignal && sleeper.terminationStatus == SIGTERM, "quitProcess n'a pas arrêté le processus")
+    print("OK  quitProcess arrête un processus qui n'est pas une app")
     exit(0)
 }
 

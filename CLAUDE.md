@@ -35,8 +35,10 @@ utilisée / totale, pression, swap, et les 5 process les plus gourmands (bouton 
 - Signature ad hoc uniquement (`codesign --sign -`) : pas de compte développeur, pas de notarisation.
 - Le noir du fond est volontaire (`Color.black`) pour se fondre dans l'encoche matérielle.
 - « Mémoire utilisée » = app (internal - purgeable) + câblée + compressée, comme le Moniteur d'activité.
-- Quitter un process demande deux clics (armement 3 s) et passe par `NSRunningApplication.terminate()`
-  (l'app peut proposer d'enregistrer) ; `SIGTERM` seulement si ce n'est pas une app.
+- Quitter un process demande deux clics (armement 3 s), via `quitProcess` : une app `.regular` reçoit seulement
+  `terminate()` (elle peut proposer d'enregistrer, jamais forcée) ; tout le reste reçoit `terminate()` puis `SIGTERM`
+  s'il vit encore 1,5 s après. Piège corrigé le 2026-11-22 : « Contenu web Safari » et les autres services XPC ont un
+  `NSRunningApplication` (politique accessory) mais ignorent `terminate()`, donc le bouton ne faisait rien.
 - Messages et textes d'interface en français.
 
 ## Pièges
