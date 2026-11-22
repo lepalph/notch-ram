@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # compile l'app universelle et lance l'autotest (mesures + arrêt d'un processus) ; échoue si un contrôle casse
+      - run: ./build.sh
+      - name: Binaire universel
+        run: |
+          info=$(lipo -archs build/NotchRAM.app/Contents/MacOS/NotchRAM)
+          echo "$info"
+          [[ $info == *arm64* && $info == *x86_64* ]]
+      - run: codesign --verify --strict build/NotchRAM.app
