@@ -21,7 +21,23 @@ It is a single Swift file with no dependencies. It makes no network requests and
 
 ## Install
 
-You need macOS 14 or later and the Xcode Command Line Tools (`xcode-select --install`).
+NotchRAM needs macOS 14 or later. It runs on Apple Silicon and Intel Macs.
+
+### Download
+
+1. Download `NotchRAM-x.y.z.zip` from the [latest release](https://github.com/lepalph/notch-ram/releases/latest) and unzip it.
+2. Move `NotchRAM.app` to your Applications folder.
+3. The app isn't notarized by Apple, so macOS blocks it the first time. Unblock it once, either way:
+   - in Terminal: `xattr -dr com.apple.quarantine /Applications/NotchRAM.app`
+   - or open it, click Done on the warning, then go to System Settings → Privacy & Security and
+     click "Open Anyway" next to the NotchRAM message.
+4. Open NotchRAM. The gauge appears around the notch.
+
+The `.sha256` file next to each zip lets you check the download: `shasum -a 256 NotchRAM-*.zip`.
+
+### Build from source
+
+You need the Xcode Command Line Tools (`xcode-select --install`).
 
 ```sh
 git clone https://github.com/lepalph/notch-ram.git
@@ -30,11 +46,12 @@ cd notch-ram
 open ~/Applications/NotchRAM.app
 ```
 
+A build made on your own Mac is never blocked, so step 3 above isn't needed.
+
+### Start at login
+
 To start it at login, add `NotchRAM` in System Settings → General → Login Items.
 To stop it, click "Fermer le widget" in the panel, or run `pkill NotchRAM`.
-
-The app is signed ad hoc on your machine. There is no prebuilt download, because an unsigned app
-downloaded from the internet gets blocked by Gatekeeper; building it yourself avoids that.
 
 ## Limits
 

@@ -23,7 +23,24 @@ C'est un seul fichier Swift, sans dépendance. Il ne fait aucune requête résea
 
 ## Installation
 
-Il faut macOS 14 ou plus récent et les Command Line Tools de Xcode (`xcode-select --install`).
+NotchRAM demande macOS 14 ou plus récent. Il tourne sur les Mac Apple Silicon et Intel.
+
+### Télécharger
+
+1. Télécharge `NotchRAM-x.y.z.zip` depuis la [dernière version](https://github.com/lepalph/notch-ram/releases/latest) et décompresse-le.
+2. Range `NotchRAM.app` dans le dossier Applications.
+3. L'app n'est pas notarisée par Apple : macOS la bloque au premier lancement. Débloque-la une fois,
+   au choix :
+   - dans le Terminal : `xattr -dr com.apple.quarantine /Applications/NotchRAM.app`
+   - ou ouvre-la, clique sur Terminé dans l'alerte, puis va dans Réglages Système → Confidentialité et
+     sécurité et clique sur « Ouvrir quand même » à côté du message sur NotchRAM.
+4. Ouvre NotchRAM : la jauge apparaît autour de l'encoche.
+
+Le fichier `.sha256` à côté de chaque zip sert à vérifier le téléchargement : `shasum -a 256 NotchRAM-*.zip`.
+
+### Compiler soi-même
+
+Il faut les Command Line Tools de Xcode (`xcode-select --install`).
 
 ```sh
 git clone https://github.com/lepalph/notch-ram.git
@@ -32,11 +49,12 @@ cd notch-ram
 open ~/Applications/NotchRAM.app
 ```
 
+Une app compilée sur ton propre Mac n'est jamais bloquée : l'étape 3 ci-dessus est inutile.
+
+### Lancement à l'ouverture de session
+
 Pour le lancer à l'ouverture de session : Réglages Système → Général → Ouverture.
 Pour l'arrêter : « Fermer le widget » dans le panneau, ou `pkill NotchRAM`.
-
-L'app est signée localement, sur ta machine. Il n'y a pas de version à télécharger : Gatekeeper
-bloque une app non signée venue d'internet, alors qu'une app compilée chez soi passe.
 
 ## Limites
 
